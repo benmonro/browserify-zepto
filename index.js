@@ -284,7 +284,9 @@ var Zepto = module.exports = (function() {
   }
 
   function setAttribute(node, name, value) {
-    value == null ? node.removeAttribute(name) : node.setAttribute(name, value)
+    node.setAttribute ?
+      (value == null ? node.removeAttribute(name) : node.setAttribute(name, value))
+      :node.prop(name, value)
   }
 
   // access className property while respecting SVGAnimatedString
@@ -622,7 +624,7 @@ var Zepto = module.exports = (function() {
       var result
       return (typeof name == 'string' && !(1 in arguments)) ?
         (!this.length || this[0].nodeType !== 1 ? undefined :
-          (!(result = this[0].getAttribute(name)) && name in this[0]) ? this[0][name] : result
+          (this[0].getAttribute ? this[0].getAttribute(name) : this.prop(name))
         ) :
         this.each(function(idx){
           if (this.nodeType !== 1) return
@@ -2127,7 +2129,7 @@ var Zepto = module.exports = (function() {
 
     function parentIfText(node){
       return 'tagName' in node ? node : node.parentNode
-          }
+    }
 
     $(document).bind('gesturestart', function(e){
       var now = Date.now(), delta = now - (gesture.last || now)
@@ -2145,11 +2147,11 @@ var Zepto = module.exports = (function() {
       } else if ('last' in gesture) {
         gesture = {}
       }
-      })
+    })
 
     ;['pinch', 'pinchIn', 'pinchOut'].forEach(function(m){
       $.fn[m] = function(callback){ return this.bind(m, callback) }
-  })
+    })
   }
 })(Zepto)
 
